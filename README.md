@@ -4,25 +4,29 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 ![Made with JavaScript](https://img.shields.io/badge/Made%20with-JavaScript-F7DF1E?logo=javascript&logoColor=black)
 
-Lista de tarefas feita em **HTML/CSS/JS puro**. Tem **modo escuro com persistência**, **localStorage** para guardar as tarefas e **animações (fade in/out)** ao adicionar/remover itens.
+Lista de tarefas feita em **HTML/CSS/JS puro**. Possui **modo escuro com persistência**, **localStorage** para guardar tarefas, **filtro por status** (Todas | Abertas | Concluídas) com botão flutuante e **animações** ao adicionar/remover itens.
 
 👉 **Demo:** **https://heppsm.github.io/projeto/**
 
 ---
 
 ## ✨ Funcionalidades
-- Adicionar tarefas
-- Remover tarefas
-- Marcar como concluída (toggle)
-- Mensagem de “Nenhuma tarefa ainda” quando a lista está vazia
-- **Modo escuro** com persistência (salvo no `localStorage`)
-- **Persistência** das tarefas (salvas no `localStorage`)
-- **Transições** suaves (fade in/out) nas tarefas
+- Adicionar tarefas (Enter no input envia)
+- Remover tarefas (com **fade-out**)
+- Marcar como concluída (toggle) — **sem fade** no check, só risco no texto
+- **Mensagem de vazio**:
+  - Lista vazia: “Nenhuma tarefa ainda”
+  - Sem resultados no filtro: “Nenhuma tarefa encontrada”
+- **Modo escuro** com persistência (`localStorage: "tema"`)
+- **Persistência** das tarefas (`localStorage: "tarefas"`)
+- **Filtro por status** (Todas | Abertas | Concluídas) via botão flutuante
+- **Responsivo** (mobile/tablet/desktop)
+- **Pequenos toques de UX**: feedback nos botões (pressionar escala), ✔ com `aria-pressed`
 
 ---
 
 ## 🧪 Como rodar
-- **Opção rápida:** abra `index.html` no navegador.
+- **Rápido:** abra `index.html` no navegador.
 - **Com servidor local (opcional):**
   - VS Code → extensão **Live Server** → “Open with Live Server”.
 
@@ -31,29 +35,28 @@ Lista de tarefas feita em **HTML/CSS/JS puro**. Tem **modo escuro com persistên
 ## 🗂️ Estrutura
 /
 ├─ index.html # marcação da página
-├─ style.css # estilos (dark mode + transitions)
-├─ script.js # lógica (eventos, renderização, localStorage)
+├─ style.css # estilos (dark mode, responsivo, transitions)
+├─ script.js # lógica (eventos, render com filtro, localStorage)
 ├─ README.md
 ├─ .gitignore
 └─ LICENSE
 
 ---
 
-## 🛠️ Tecnologias
-- **HTML5**
-- **CSS3** (transitions)
-- **JavaScript (ES6+)**
-- **localStorage**
-
----
-
 ## 🧠 Como funciona (resumo técnico)
-- As tarefas ficam em um array `tarefas` e são persistidas via `localStorage` (`"tarefas"`).
-- O tema é salvo em `"tema"` (`"dark"` | `"light"`).
-- O `renderizarTarefas()` reconstrói a lista a cada alteração.
-- Para as animações:
-  - Cada `<li>` entra com a classe `.invisivel` → removida no `requestAnimationFrame`, ativando o **fade-in**.
-  - Ao remover, adiciona `.invisivel` e espera `transitionend` de `opacity` antes de tirar do DOM (**fade-out**).
+- As tarefas vivem em `let tarefas = [...]` e são salvas em `localStorage` (chave `"tarefas"`).
+- Tema salvo em `"tema"` (`"dark"` | `"light"`).
+- `statusFilter` controla o filtro atual (Todas | Abertas | Concluídas).  
+  - *Obs:* por padrão **não** persiste; se quiser, basta salvar/ler `"statusFilter"` no `localStorage`.
+- `renderizarTarefas()`:
+  1. filtra `tarefas` conforme `statusFilter`;
+  2. reconstrói a lista com base nas **filtradas**;
+  3. aplica **fade-in** adicionando `<li>.invisivel` e removendo via `requestAnimationFrame`;
+  4. na remoção, espera `transitionend` de `opacity` para tirar do DOM (fade-out).
+- Clique no ✔:
+  - Em **Todas**: só alterna a classe `.concluida` (sem re-render).
+  - Em **Abertas/Concluídas**: re-renderiza para refletir a saída/entrada no filtro.
+  - Define `aria-pressed` no botão para acessibilidade.
 
 ---
 
@@ -61,17 +64,20 @@ Lista de tarefas feita em **HTML/CSS/JS puro**. Tem **modo escuro com persistên
 - [x] Empty state (“Nenhuma tarefa ainda”)
 - [x] Modo escuro com persistência
 - [x] Persistência das tarefas (localStorage)
-- [x] Fade in/out nas tarefas
-- [ ] **Edição de tarefa** (duplo clique + botão Editar)
+- [x] Fade in/out ao adicionar/remover
+- [x] **Filtro por status** (Todas | Abertas | Concluídas)
+- [ ] Contador de pendentes/concluídas
+- [ ] Persistir `statusFilter` no `localStorage`
+- [ ] **Edição de tarefa** (duplo clique + botão “Editar”)
 - [ ] **Arrastar e soltar** (drag & drop) para reordenar
-- [ ] **Filtros** (todas | pendentes | concluídas) e **busca por texto**
+- [ ] **Busca por texto**
 - [ ] **Prioridade** (alta | média | baixa) com destaque visual
-- [ ] Acessibilidade (aria-labels, foco, leitura de tela)
+- [ ] Acessibilidade extra (atalhos, foco, leitura de tela)
 
 ---
 
 ## 🚀 Deploy (GitHub Pages)
-O site é publicado via **GitHub Pages** a partir da branch `main` (pasta `/`).
+Publicado via **GitHub Pages** a partir da branch `main` (pasta raiz).
 
 - Configuração: **Settings → Pages → Source: Deploy from a branch → main/(root)**
 - URL: `https://heppsm.github.io/projeto/`
@@ -79,10 +85,11 @@ O site é publicado via **GitHub Pages** a partir da branch `main` (pasta `/`).
 ---
 
 ## 🤝 Contribuindo
-Sinta-se à vontade para abrir **Issues** e **PRs**. Commits pequenos e mensagens claras ajudam:
-- `feat: edição de tarefa (duplo clique + botão)`
-- `fix: corrigir classe .invisivel`
-- `docs: atualizar README com link da demo`
+Sinta-se à vontade para abrir **Issues** e **PRs**. Mensagens de commit sugeridas:
+- `feat: filtro por status (todas/abertas/concluídas)`
+- `feat: equalizar tamanho dos botões ✔ e X`
+- `fix: remover fade no check e manter apenas no add/remove`
+- `docs: atualizar README com recursos e roadmap`
 
 ---
 
